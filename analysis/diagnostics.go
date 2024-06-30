@@ -29,7 +29,7 @@ func getHeaderDiagnostics(header string) []lsp.Diagnostic {
 	} else if len(header) > 72 {
 		diagnostics = append(diagnostics, lsp.Diagnostic{
 			Severity: 1,
-			Range:    LineRange(0, 0, 0, 72),
+			Range:    LineRange(0, 72, 0, len(header)),
 			Source:   "conventional-commit-lsp",
 			Message:  "Commit message must be less than 72 characters",
 		})
@@ -37,7 +37,7 @@ func getHeaderDiagnostics(header string) []lsp.Diagnostic {
 	} else if len(header) > 50 {
 		diagnostics = append(diagnostics, lsp.Diagnostic{
 			Severity: 2,
-			Range:    LineRange(0, 0, 0, 50),
+			Range:    LineRange(0, 50, 0, len(header)),
 			Source:   "conventional-commit-lsp",
 			Message:  "Commit message should be less than 50 characters",
 		})
@@ -45,7 +45,7 @@ func getHeaderDiagnostics(header string) []lsp.Diagnostic {
 
 	commit_type, description, found := strings.Cut(header, ":")
 	if !found {
-		line_range := LineRange(0, 0, 0, len(header)-1)
+		line_range := LineRange(0, 0, 0, len(header))
 		diagnostics = append(diagnostics, lsp.Diagnostic{
 			Severity: 1,
 			Range:    line_range,
@@ -56,7 +56,7 @@ func getHeaderDiagnostics(header string) []lsp.Diagnostic {
 	}
 
 	if strings.Contains(commit_type, " ") {
-		line_range := LineRange(0, 0, 0, len(commit_type)-1)
+		line_range := LineRange(0, 0, 0, len(commit_type))
 		diagnostics = append(diagnostics, lsp.Diagnostic{
 			Severity: 1,
 			Range:    line_range,
