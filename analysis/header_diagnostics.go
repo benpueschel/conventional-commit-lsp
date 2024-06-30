@@ -24,7 +24,6 @@ func getHeaderDiagnostics(header string) []lsp.Diagnostic {
 			Source:   "conventional-commit-lsp",
 			Message:  "Commit message must be less than 72 characters",
 		})
-		return diagnostics
 	} else if len(header) > 50 {
 		diagnostics = append(diagnostics, lsp.Diagnostic{
 			Severity: 2,
