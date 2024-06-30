@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
+	"io"
 	"log"
 	"os"
 	"strconv"
@@ -20,6 +21,7 @@ func main() {
 	scanner.Split(Split)
 
 	state := analysis.NewState()
+	writer := os.Stdout
 
 	for scanner.Scan() {
 		msg := scanner.Bytes()
@@ -28,11 +30,11 @@ func main() {
 			logger.Printf("Failed to decode message: %s", err)
 			continue
 		}
-		handleMessage(logger, &state, message, contents)
+		handleMessage(logger, writer, &state, message, contents)
 	}
 }
 
-func handleMessage(logger *log.Logger, state *analysis.State, msg rpc.BaseMessage, contents []byte) {
+func handleMessage(logger *log.Logger, writer io.Writer, state *analysis.State, msg rpc.BaseMessage, contents []byte) {
 	logger.Printf("Received message with method: %s", msg.Method)
 
 	switch msg.Method {
@@ -45,9 +47,7 @@ func handleMessage(logger *log.Logger, state *analysis.State, msg rpc.BaseMessag
 		logger.Printf("Connected to client: %s %s", request.Params.ClientInfo.Name, request.Params.ClientInfo.Version)
 
 		msg := lsp.NewInitializeResponse(request.ID)
-		reply := rpc.EncodeMessage(msg)
-		writer := os.Stdout
-		writer.Write([]byte(reply))
+		writeResponse(msg, writer)
 		logger.Println("Sent initialize response")
 	case "textDocument/didOpen":
 		var request lsp.TextDocumentDidOpenNotification
@@ -68,6 +68,11 @@ func handleMessage(logger *log.Logger, state *analysis.State, msg rpc.BaseMessag
 			state.UpdateDocument(request.Params.TextDocument.URI, change.Text)
 		}
 	}
+}
+
+func writeResponse(msg any, writer io.Writer) {
+	reply := rpc.EncodeMessage(msg)
+	writer.Write([]byte(reply))
 }
 
 func getLogger(filename string) *log.Logger {
