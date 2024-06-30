@@ -7,12 +7,12 @@ import (
 	"github.com/benpueschel/conventional-commit-lsp/lsp"
 )
 
-func getHeaderDiagnostics(header string) []lsp.Diagnostic {
+func getHeaderDiagnostics(header string, row int) []lsp.Diagnostic {
 	diagnostics := []lsp.Diagnostic{}
 	if len(header) == 0 {
 		diagnostics = append(diagnostics, lsp.Diagnostic{
 			Severity: 1,
-			Range:    LineRange(0, 0, 0, 0),
+			Range:    LineRange(row, 0, row, 0),
 			Source:   "conventional-commit-lsp",
 			Message:  "Commit message must not be empty",
 		})
@@ -20,14 +20,14 @@ func getHeaderDiagnostics(header string) []lsp.Diagnostic {
 	} else if len(header) > 72 {
 		diagnostics = append(diagnostics, lsp.Diagnostic{
 			Severity: 1,
-			Range:    LineRange(0, 72, 0, len(header)),
+			Range:    LineRange(row, 72, row, len(header)),
 			Source:   "conventional-commit-lsp",
 			Message:  "Commit message must be less than 72 characters",
 		})
 	} else if len(header) > 50 {
 		diagnostics = append(diagnostics, lsp.Diagnostic{
 			Severity: 2,
-			Range:    LineRange(0, 50, 0, len(header)),
+			Range:    LineRange(row, 50, row, len(header)),
 			Source:   "conventional-commit-lsp",
 			Message:  "Commit message should be less than 50 characters",
 		})
@@ -35,7 +35,7 @@ func getHeaderDiagnostics(header string) []lsp.Diagnostic {
 
 	commit_type, description, found := strings.Cut(header, ": ")
 	if !found {
-		line_range := LineRange(0, 0, 0, len(header))
+		line_range := LineRange(row, 0, row, len(header))
 		diagnostics = append(diagnostics, lsp.Diagnostic{
 			Severity: 1,
 			Range:    line_range,
@@ -45,10 +45,10 @@ func getHeaderDiagnostics(header string) []lsp.Diagnostic {
 		return diagnostics
 	}
 
-	diagnostics = append(diagnostics, getTypeDiagnostic(commit_type)...)
+	diagnostics = append(diagnostics, getTypeDiagnostic(commit_type, row)...)
 
 	if strings.TrimSpace(description) == "" {
-		line_range := LineRange(0, len(commit_type)+1, 0, len(header))
+		line_range := LineRange(row, len(commit_type)+1, row, len(header))
 		diagnostics = append(diagnostics, lsp.Diagnostic{
 			Severity: 1,
 			Range:    line_range,
@@ -58,7 +58,7 @@ func getHeaderDiagnostics(header string) []lsp.Diagnostic {
 	}
 
 	if commit_type == "" {
-		line_range := LineRange(0, 0, 0, len(header)-1)
+		line_range := LineRange(row, 0, row, len(header)-1)
 		diagnostics = append(diagnostics, lsp.Diagnostic{
 			Severity: 1,
 			Range:    line_range,
@@ -70,10 +70,10 @@ func getHeaderDiagnostics(header string) []lsp.Diagnostic {
 	return diagnostics
 }
 
-func getTypeDiagnostic(commit_type string) []lsp.Diagnostic {
+func getTypeDiagnostic(commit_type string, row int) []lsp.Diagnostic {
 	diagnostics := []lsp.Diagnostic{}
 	if strings.Contains(commit_type, " ") {
-		line_range := LineRange(0, 0, 0, len(commit_type))
+		line_range := LineRange(row, 0, row, len(commit_type))
 		diagnostics = append(diagnostics, lsp.Diagnostic{
 			Severity: 1,
 			Range:    line_range,
@@ -86,9 +86,9 @@ func getTypeDiagnostic(commit_type string) []lsp.Diagnostic {
 	if !found {
 		commit_type, breaking, _ := strings.Cut(commit_type, "!")
 		idx := len(commit_type) + len(scope) + 1
-		diagnostics := checkBreakingHeaderDiagnostic(breaking, idx, diagnostics)
+		diagnostics := checkBreakingHeaderDiagnostic(breaking, idx, row, diagnostics)
 		if !isAlphabetic(commit_type) {
-			line_range := LineRange(0, 0, 0, len(commit_type))
+			line_range := LineRange(row, 0, row, len(commit_type))
 			diagnostics = append(diagnostics, lsp.Diagnostic{
 				Severity: 1,
 				Range:    line_range,
@@ -102,7 +102,7 @@ func getTypeDiagnostic(commit_type string) []lsp.Diagnostic {
 	scope, breaking, found := strings.Cut(scope, ")")
 	if !found {
 		idx := len(commit_type) + len(scope) + 1
-		line_range := LineRange(0, idx, 0, idx+1)
+		line_range := LineRange(row, idx, row, idx+1)
 		diagnostics = append(diagnostics, lsp.Diagnostic{
 			Severity: 1,
 			Range:    line_range,
@@ -112,10 +112,10 @@ func getTypeDiagnostic(commit_type string) []lsp.Diagnostic {
 	}
 
 	idx := len(commit_type) + len(scope) + 2
-	diagnostics = checkBreakingHeaderDiagnostic(breaking, idx, diagnostics)
+	diagnostics = checkBreakingHeaderDiagnostic(breaking, idx, row, diagnostics)
 
 	if !isAlphabetic(commit_type) {
-		line_range := LineRange(0, 0, 0, len(commit_type))
+		line_range := LineRange(row, 0, row, len(commit_type))
 		diagnostics = append(diagnostics, lsp.Diagnostic{
 			Severity: 1,
 			Range:    line_range,
@@ -126,7 +126,7 @@ func getTypeDiagnostic(commit_type string) []lsp.Diagnostic {
 
 	if !isAlphabetic(scope) {
 		idx := len(commit_type) + len(scope) + 1
-		line_range := LineRange(0, len(commit_type)+1, 0, idx)
+		line_range := LineRange(row, len(commit_type)+1, row, idx)
 		diagnostics = append(diagnostics, lsp.Diagnostic{
 			Severity: 1,
 			Range:    line_range,
@@ -138,9 +138,9 @@ func getTypeDiagnostic(commit_type string) []lsp.Diagnostic {
 	return diagnostics
 }
 
-func checkBreakingHeaderDiagnostic(breaking string, idx int, diagnostics []lsp.Diagnostic) []lsp.Diagnostic {
+func checkBreakingHeaderDiagnostic(breaking string, idx int, row int, diagnostics []lsp.Diagnostic) []lsp.Diagnostic {
 	if breaking != "" && breaking != "!" {
-		line_range := LineRange(0, idx, 0, idx+len(breaking))
+		line_range := LineRange(row, idx, row, idx+len(breaking))
 		diagnostics = append(diagnostics, lsp.Diagnostic{
 			Severity: 1,
 			Range:    line_range,
