@@ -43,14 +43,14 @@ func getHeaderDiagnostics(header string) []lsp.Diagnostic {
 		})
 	}
 
-	commit_type, description, found := strings.Cut(header, ":")
+	commit_type, description, found := strings.Cut(header, ": ")
 	if !found {
 		line_range := LineRange(0, 0, 0, len(header))
 		diagnostics = append(diagnostics, lsp.Diagnostic{
 			Severity: 1,
 			Range:    line_range,
 			Source:   "conventional-commit-lsp",
-			Message:  "Commit message must contain a type and description, separated by a colon. ",
+			Message:  "Commit message must contain a type and description, separated by a colon and space. ",
 		})
 		return diagnostics
 	}
@@ -64,6 +64,16 @@ func getHeaderDiagnostics(header string) []lsp.Diagnostic {
 			Message:  "Commit type must not contain spaces",
 		})
 		return diagnostics
+	}
+
+	if strings.TrimSpace(description) == "" {
+		line_range := LineRange(0, len(commit_type)+1, 0, len(header))
+		diagnostics = append(diagnostics, lsp.Diagnostic{
+			Severity: 1,
+			Range:    line_range,
+			Source:   "conventional-commit-lsp",
+			Message:  "Commit message must contain a description",
+		})
 	}
 
 	if commit_type == "" {
