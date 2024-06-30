@@ -55,8 +55,11 @@ func handleMessage(logger *log.Logger, writer io.Writer, state *analysis.State, 
 			logger.Printf("textDocument/didOpen: %s", err)
 			return
 		}
-		state.OpenDocument(request.Params.TextDocument.URI, request.Params.TextDocument.Text)
 		logger.Printf("Opened document: %s", request.Params.TextDocument.URI)
+		diagnostics := state.OpenDocument(request.Params.TextDocument.URI, request.Params.TextDocument.Text)
+		if diagnostics != nil {
+			writeDiagnostics(request.Params.TextDocument.URI, diagnostics, writer)
+		}
 	case "textDocument/didChange":
 		var request lsp.TextDocumentDidChangeNotification
 		if err := json.Unmarshal(contents, &request); err != nil {
@@ -65,9 +68,25 @@ func handleMessage(logger *log.Logger, writer io.Writer, state *analysis.State, 
 		}
 		logger.Printf("Changed document: %s", request.Params.TextDocument.URI)
 		for _, change := range request.Params.ContentChanges {
-			state.UpdateDocument(request.Params.TextDocument.URI, change.Text)
+			diagnostics := state.UpdateDocument(request.Params.TextDocument.URI, change.Text)
+			if diagnostics != nil {
+				writeDiagnostics(request.Params.TextDocument.URI, diagnostics, writer)
+			}
 		}
 	}
+}
+
+func writeDiagnostics(uri string, diagnostics []lsp.Diagnostic, writer io.Writer) {
+	writeResponse(lsp.PublishDiagnosticsNotification{
+		Notification: lsp.Notification{
+			RPC:    "2.0",
+			Method: "textDocument/publishDiagnostics",
+		},
+		Params: lsp.PublishDiagnosticsParams{
+			URI:         uri,
+			Diagnostics: diagnostics,
+		},
+	}, writer)
 }
 
 func writeResponse(msg any, writer io.Writer) {
