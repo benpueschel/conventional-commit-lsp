@@ -81,6 +81,14 @@ func handleMessage(logger *log.Logger, writer io.Writer, state *analysis.State, 
 		}
 		response := state.GetCodeActions(request)
 		writeResponse(response, writer)
+	case "textDocument/completion":
+		var request lsp.CompletionRequest
+		if err := json.Unmarshal(contents, &request); err != nil {
+			logger.Printf("textDocument/completion: %s", err)
+			return
+		}
+		response := state.GetCompletions(request)
+		writeResponse(response, writer)
 	}
 }
 

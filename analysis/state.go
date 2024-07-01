@@ -63,6 +63,24 @@ func GetText(text string, range_ lsp.Range) string {
 	return newText
 }
 
+func GetLine(text string, line int) string {
+	lines := strings.Split(text, "\n")
+	return lines[line]
+}
+
+func IsHeader(text string, line int) bool {
+	lines := strings.Split(text, "\n")
+	for i, l := range lines {
+		// skip comments
+		if strings.Index(l, "#") == 0 {
+			continue
+		}
+		// if the line we're looking for is the first non-comment line, it's a header
+		return i == line
+	}
+	return false
+}
+
 func NewState() State {
 	return State{
 		Documents: make(map[string]string),
@@ -78,4 +96,3 @@ func (s *State) UpdateDocument(uri string, text string) []lsp.Diagnostic {
 	s.Documents[uri] = text
 	return GetDiagnostics(text)
 }
-
