@@ -10,7 +10,6 @@ func GetDiagnostics(text string) []lsp.Diagnostic {
 	diagnostics := []lsp.Diagnostic{}
 
 	sections := strings.Split(text, "\n\n")
-	totalSections := len(sections)
 	currentLine := -1
 	for index, section := range sections {
 		lines := strings.Split(section, "\n")
@@ -38,20 +37,11 @@ func GetDiagnostics(text string) []lsp.Diagnostic {
 					})
 				}
 			}
-		} else if totalSections > 2 && index == totalSections-1 {
-			// footer
-			for _, line := range lines {
-				currentLine++
-				// line is a comment, skip
-				if strings.Index(line, "#") == 0 {
-					continue
-				}
-				diagnostics = append(diagnostics, getFooterDiagnostics(line, currentLine)...)
-			}
 		} else {
-			// body
+			// body or footer (it's hard to tell the difference, so we'll just get diagnostics for both)
 			for _, line := range lines {
 				currentLine++
+				diagnostics = append(diagnostics, getFooterDiagnostics(line, currentLine)...)
 				if len(line) > 72 {
 					diagnostics = append(diagnostics, lsp.Diagnostic{
 						Severity: 2,
