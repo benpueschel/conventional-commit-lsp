@@ -41,6 +41,10 @@ func (s *State) GetCompletions(request lsp.CompletionRequest) lsp.CompletionResp
 				Label:         "refactor",
 				Detail:        "Indicates a commit that refactors code.",
 				Documentation: "",
+			}, {
+				Label:         "revert",
+				Detail:        "Indicates a commit that reverts one ore more previous commits.",
+				Documentation: "",
 			}}
 		}
 	} else {
