@@ -15,6 +15,9 @@ func getHeaderDiagnostics(header string, row int) []lsp.Diagnostic {
 			Range:    LineRange(row, 0, row, 0),
 			Source:   "conventional-commit-lsp",
 			Message:  "Commit message must not be empty",
+			Data: &lsp.DiagnosticData{
+				DiagnosticType: lsp.CommitMessageHeaderMissing,
+			},
 		})
 		return diagnostics
 	} else if len(header) > 72 {
@@ -94,6 +97,9 @@ func getTypeDiagnostic(commit_type string, row int) []lsp.Diagnostic {
 				Range:    line_range,
 				Source:   "conventional-commit-lsp",
 				Message:  "Commit type must be alphabetic",
+				Data: &lsp.DiagnosticData{
+					DiagnosticType: lsp.CommitMessageTypeNotAlphabetical,
+				},
 			})
 		}
 		return diagnostics
@@ -121,6 +127,9 @@ func getTypeDiagnostic(commit_type string, row int) []lsp.Diagnostic {
 			Range:    line_range,
 			Source:   "conventional-commit-lsp",
 			Message:  "Commit type must be alphabetic",
+			Data: &lsp.DiagnosticData{
+				DiagnosticType: lsp.CommitMessageTypeNotAlphabetical,
+			},
 		})
 	}
 
@@ -132,6 +141,9 @@ func getTypeDiagnostic(commit_type string, row int) []lsp.Diagnostic {
 			Range:    line_range,
 			Source:   "conventional-commit-lsp",
 			Message:  "Scope must be alphabetic",
+			Data: &lsp.DiagnosticData{
+				DiagnosticType: lsp.CommitMessageScopeNotAlphabetical,
+			},
 		})
 	}
 
@@ -146,6 +158,9 @@ func checkBreakingHeaderDiagnostic(breaking string, idx int, row int, diagnostic
 			Range:    line_range,
 			Source:   "conventional-commit-lsp",
 			Message:  "Breaking change indicator must be '!'",
+			Data: &lsp.DiagnosticData{
+				DiagnosticType: lsp.CommitMessageHeaderBreakingInvalid,
+			},
 		})
 	}
 	return diagnostics

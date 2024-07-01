@@ -32,6 +32,9 @@ func GetDiagnostics(text string) []lsp.Diagnostic {
 						Range:    LineRange(currentLine, 0, currentLine, len(line)),
 						Source:   "conventional-commit-lsp",
 						Message:  "Commit body must begin one blank line after the header. This line should be empty.",
+						Data: &lsp.DiagnosticData{
+							DiagnosticType: lsp.CommitMessageNoNewlineAfterHeader,
+						},
 					})
 				}
 			}

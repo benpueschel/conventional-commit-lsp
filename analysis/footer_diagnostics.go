@@ -49,6 +49,9 @@ func getFooterDiagnostics(line string, row int) []lsp.Diagnostic {
 				Range:    line_range,
 				Source:   "conventional-commit-lsp",
 				Message:  "BREAKING CHANGE must be uppercase.",
+				Data: &lsp.DiagnosticData{
+					DiagnosticType: lsp.CommitMessageBreakingChangeCaseInvalid,
+				},
 			})
 		} else if strings.ToUpper(token) == "BREAKING-CHANGE" {
 			diagnostics = append(diagnostics, lsp.Diagnostic{
@@ -56,6 +59,9 @@ func getFooterDiagnostics(line string, row int) []lsp.Diagnostic {
 				Range:    line_range,
 				Source:   "conventional-commit-lsp",
 				Message:  "BREAKING-CHANGE must be uppercase.",
+				Data: &lsp.DiagnosticData{
+					DiagnosticType: lsp.CommitMessageBreakingChangeCaseInvalid,
+				},
 			})
 		} else if strings.Contains(token, " ") {
 			// INFO: see above

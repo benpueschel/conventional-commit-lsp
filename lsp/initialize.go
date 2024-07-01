@@ -26,7 +26,8 @@ type InitializeResult struct {
 
 type ServerCapabilities struct {
 	// TextDocumentSyncKind: 0 - None, 1 - Full, 2 - Incremental
-	TextDocumentSync int `json:"textDocumentSync"`
+	TextDocumentSync   int  `json:"textDocumentSync"`
+	CodeActionProvider bool `json:"codeActionProvider"`
 }
 
 type ServerInfo struct {
@@ -42,7 +43,8 @@ func NewInitializeResponse(id int) InitializeResponse {
 		},
 		Result: InitializeResult{
 			Capabilities: ServerCapabilities{
-				TextDocumentSync: 1,
+				TextDocumentSync:   1,
+				CodeActionProvider: true,
 			},
 			ServerInfo: ServerInfo{
 				Name:    "conventional-commit-lsp",
