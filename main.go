@@ -3,14 +3,12 @@ package main
 import (
 	"bufio"
 	"bytes"
-	"encoding/json"
 	"io"
 	"log"
 	"os"
 	"strconv"
 
 	"github.com/benpueschel/conventional-commit-lsp/analysis"
-	"github.com/benpueschel/conventional-commit-lsp/lsp"
 	"github.com/benpueschel/conventional-commit-lsp/rpc"
 )
 
@@ -39,75 +37,16 @@ func handleMessage(logger *log.Logger, writer io.Writer, state *analysis.State, 
 
 	switch msg.Method {
 	case "initialize":
-		var request lsp.InitializeRequest
-		if err := json.Unmarshal(contents, &request); err != nil {
-			logger.Printf("initialize: %s", err)
-			return
-		}
-		logger.Printf("Connected to client: %s %s", request.Params.ClientInfo.Name, request.Params.ClientInfo.Version)
-
-		msg := lsp.NewInitializeResponse(request.ID)
-		writeResponse(msg, writer)
-		logger.Println("Sent initialize response")
+		initialize(logger, writer, contents)
 	case "textDocument/didOpen":
-		var request lsp.TextDocumentDidOpenNotification
-		if err := json.Unmarshal(contents, &request); err != nil {
-			logger.Printf("textDocument/didOpen: %s", err)
-			return
-		}
-		logger.Printf("Opened document: %s", request.Params.TextDocument.URI)
-		diagnostics := state.OpenDocument(request.Params.TextDocument.URI, request.Params.TextDocument.Text)
-		if diagnostics != nil {
-			writeDiagnostics(request.Params.TextDocument.URI, diagnostics, writer)
-		}
+		textDocumentDidOpen(logger, writer, state, contents)
 	case "textDocument/didChange":
-		var request lsp.TextDocumentDidChangeNotification
-		if err := json.Unmarshal(contents, &request); err != nil {
-			logger.Printf("textDocument/didChange: %s", err)
-			return
-		}
-		logger.Printf("Changed document: %s", request.Params.TextDocument.URI)
-		for _, change := range request.Params.ContentChanges {
-			diagnostics := state.UpdateDocument(request.Params.TextDocument.URI, change.Text)
-			if diagnostics != nil {
-				writeDiagnostics(request.Params.TextDocument.URI, diagnostics, writer)
-			}
-		}
+		textDocumentDidChange(logger, writer, state, contents)
 	case "textDocument/codeAction":
-		var request lsp.CodeActionRequest
-		if err := json.Unmarshal(contents, &request); err != nil {
-			logger.Printf("textDocument/codeAction: %s", err)
-			return
-		}
-		response := state.GetCodeActions(request)
-		writeResponse(response, writer)
+		textDocumentCodeAction(logger, writer, state, contents)
 	case "textDocument/completion":
-		var request lsp.CompletionRequest
-		if err := json.Unmarshal(contents, &request); err != nil {
-			logger.Printf("textDocument/completion: %s", err)
-			return
-		}
-		response := state.GetCompletions(request)
-		writeResponse(response, writer)
+		textDocumentCompletion(logger, writer, state, contents)
 	}
-}
-
-func writeDiagnostics(uri string, diagnostics []lsp.Diagnostic, writer io.Writer) {
-	writeResponse(lsp.PublishDiagnosticsNotification{
-		Notification: lsp.Notification{
-			RPC:    "2.0",
-			Method: "textDocument/publishDiagnostics",
-		},
-		Params: lsp.PublishDiagnosticsParams{
-			URI:         uri,
-			Diagnostics: diagnostics,
-		},
-	}, writer)
-}
-
-func writeResponse(msg any, writer io.Writer) {
-	reply := rpc.EncodeMessage(msg)
-	writer.Write([]byte(reply))
 }
 
 func getLogger(filename string) *log.Logger {
