@@ -49,18 +49,20 @@ func LineRange(startLine int, startCharacter int, endLine int, endCharacter int)
 func GetText(text string, range_ lsp.Range) string {
 	lines := strings.Split(text, "\n")
 	newText := ""
-	for i, line := range lines {
-		if i >= range_.Start.Line && i <= range_.End.Line {
-			// if we're on the first line, start at the character offset
-			if i == range_.Start.Line {
-				line = line[range_.Start.Character:]
-			}
-			// if we're on the last line, end at the character offset
-			if i == range_.End.Line {
-				line = line[:range_.End.Character]
-			}
-			newText += line + "\n"
+	startLine := range_.Start.Line
+	endline := range_.End.Line
+	for i, line := range lines[startLine : endline+1] {
+		// if we're on the first line, start at the character offset
+		if i == range_.Start.Line {
+			line = line[range_.Start.Character:]
 		}
+		// if we're on the last line, end at the character offset
+		if i == range_.End.Line {
+			line = line[:range_.End.Character]
+			newText += line
+			break
+		}
+		newText += line + "\n"
 	}
 	return newText
 }
