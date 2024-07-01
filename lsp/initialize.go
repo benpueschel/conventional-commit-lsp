@@ -1,10 +1,12 @@
 package lsp
 
+// https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#initialize
 type InitializeRequest struct {
 	Request
 	Params InitializeParams `json:"params"`
 }
 
+// https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#initializeParams
 type InitializeParams struct {
 	ClientInfo *ClientInfo `json:"clientInfo"`
 }
@@ -14,16 +16,19 @@ type ClientInfo struct {
 	Version string `json:"version"`
 }
 
+// https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#initialize
 type InitializeResponse struct {
 	Response
 	Result InitializeResult `json:"result"`
 }
 
+// https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#initializeResult
 type InitializeResult struct {
 	Capabilities ServerCapabilities `json:"capabilities"`
 	ServerInfo   ServerInfo         `json:"serverInfo"`
 }
 
+// https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#serverCapabilities
 type ServerCapabilities struct {
 	// TextDocumentSyncKind: 0 - None, 1 - Full, 2 - Incremental
 	TextDocumentSync   int                `json:"textDocumentSync"`
@@ -31,6 +36,7 @@ type ServerCapabilities struct {
 	CompletionProvider *CompletionOptions `json:"completionProvider,omitempty"`
 }
 
+// https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#completionOptions
 type CompletionOptions struct {
 }
 

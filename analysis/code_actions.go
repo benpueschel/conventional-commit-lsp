@@ -68,6 +68,7 @@ func (s *State) insertNewlineAction(request lsp.CodeActionRequest, range_ lsp.Ra
 	}
 }
 
+// Converts the text in the specified range to uppercase
 func (s *State) toUppercaseAction(request lsp.CodeActionRequest, range_ lsp.Range) lsp.CodeAction {
 	text := GetText(s.Documents[request.Params.TextDocument.URI], range_)
 	newText := strings.ToUpper(text)
@@ -92,6 +93,7 @@ func (s *State) toUppercaseAction(request lsp.CodeActionRequest, range_ lsp.Rang
 	}
 }
 
+// Removes all characters in the specified range
 func (s *State) removeExtraCharsAction(request lsp.CodeActionRequest, range_ lsp.Range) lsp.CodeAction {
 	return lsp.CodeAction{
 		Title: "Remove invalid characters",
@@ -108,6 +110,7 @@ func (s *State) removeExtraCharsAction(request lsp.CodeActionRequest, range_ lsp
 	}
 }
 
+// Generates a header in the specified range
 func (s *State) generateHeaderAction(request lsp.CodeActionRequest, range_ lsp.Range) lsp.CodeAction {
 	// TODO: snippet support
 	return lsp.CodeAction{
@@ -125,6 +128,7 @@ func (s *State) generateHeaderAction(request lsp.CodeActionRequest, range_ lsp.R
 	}
 }
 
+// Removes all non-alphabetical characters in the specified range
 func (s *State) removeNonAlphabeticalAction(request lsp.CodeActionRequest, range_ lsp.Range) lsp.CodeAction {
 	text := GetText(s.Documents[request.Params.TextDocument.URI], range_)
 	newText := ""

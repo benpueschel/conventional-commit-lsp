@@ -31,6 +31,7 @@ type CommitMessageFooter struct {
 	Value string
 }
 
+// LineRange returns an lsp.Range for the given line and character offsets
 func LineRange(startLine int, startCharacter int, endLine int, endCharacter int) lsp.Range {
 	return lsp.Range{
 		Start: lsp.Position{
@@ -44,6 +45,7 @@ func LineRange(startLine int, startCharacter int, endLine int, endCharacter int)
 	}
 }
 
+// GetText returns the text within the given range
 func GetText(text string, range_ lsp.Range) string {
 	lines := strings.Split(text, "\n")
 	newText := ""
@@ -63,11 +65,14 @@ func GetText(text string, range_ lsp.Range) string {
 	return newText
 }
 
+// GetLine returns the nth line of the given text
 func GetLine(text string, line int) string {
 	lines := strings.Split(text, "\n")
 	return lines[line]
 }
 
+// IsHeader returns true if the given line is a commit message header
+// (i.e. the first non-comment line in the text)
 func IsHeader(text string, line int) bool {
 	lines := strings.Split(text, "\n")
 	for i, l := range lines {

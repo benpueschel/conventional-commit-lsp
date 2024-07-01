@@ -2,18 +2,28 @@ package lsp
 
 const Source = "conventional-commit-lsp"
 
+// https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#requestMessage
 type Request struct {
-	RPC    string `json:"jsonrpc"`
-	ID     int    `json:"id"`
+	// The JSON RPC version (2.0).
+	RPC string `json:"jsonrpc"`
+	// The request id.
+	ID int `json:"id"`
+	// The method to be invoked.
 	Method string `json:"method"`
 }
 
+// https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#responseMessage
 type Response struct {
+	// The JSON RPC version (2.0).
 	RPC string `json:"jsonrpc"`
-	ID  *int   `json:"id,omitempty"`
+	// The request id.
+	ID *int `json:"id,omitempty"`
 }
 
+// https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#notificationMessage
 type Notification struct {
-	RPC    string `json:"jsonrpc"`
+	// The JSON RPC version (2.0).
+	RPC string `json:"jsonrpc"`
+	// The method to be invoked.
 	Method string `json:"method"`
 }
