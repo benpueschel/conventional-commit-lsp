@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	logger := getLogger("log.txt")
+	logger := nullLogger()
 	logger.Println("Starting server")
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Split(Split)
@@ -47,6 +47,10 @@ func handleMessage(logger *log.Logger, writer io.Writer, state *analysis.State, 
 	case "textDocument/completion":
 		textDocumentCompletion(logger, writer, state, contents)
 	}
+}
+
+func nullLogger() *log.Logger {
+	return log.New(io.Discard, "", 0)
 }
 
 func getLogger(filename string) *log.Logger {
