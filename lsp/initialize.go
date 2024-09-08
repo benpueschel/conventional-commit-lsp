@@ -33,6 +33,7 @@ type ServerCapabilities struct {
 	// TextDocumentSyncKind: 0 - None, 1 - Full, 2 - Incremental
 	TextDocumentSync   int                `json:"textDocumentSync"`
 	CodeActionProvider bool               `json:"codeActionProvider"`
+	DefinitionProvider bool               `json:"definitionProvider,omitempty"`
 	CompletionProvider *CompletionOptions `json:"completionProvider,omitempty"`
 }
 
@@ -55,6 +56,7 @@ func NewInitializeResponse(id int) InitializeResponse {
 			Capabilities: ServerCapabilities{
 				TextDocumentSync:   1,
 				CodeActionProvider: true,
+				DefinitionProvider: true,
 				CompletionProvider: &CompletionOptions{},
 			},
 			ServerInfo: ServerInfo{

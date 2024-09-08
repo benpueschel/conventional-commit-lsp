@@ -1,6 +1,6 @@
 package lsp
 
-const Source = "conventional-commit-lsp"
+const ServerName = "conventional-commit-lsp"
 
 // https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#requestMessage
 type Request struct {

@@ -17,7 +17,7 @@ func getFooterDiagnostics(line string, row int) []lsp.Diagnostic {
 		diagnostics = append(diagnostics, lsp.Diagnostic{
 			Severity: 2,
 			Range:    LineRange(row, 72, row, len(line)),
-			Source:   "conventional-commit-lsp",
+			Source:   lsp.ServerName,
 			Message:  "Commit footer should be wrapped at 72 characters.",
 		})
 	}
@@ -27,13 +27,13 @@ func getFooterDiagnostics(line string, row int) []lsp.Diagnostic {
 		// INFO: Footers can contain newlines, so we cannot enforce every line
 		// to be in the format of 'Footer-key: string value'. Basically, we can't
 		// be sure if the user is intending to write a multiline footer or just isn't
-		// able to write a simple list of key-value pair footers correctly. 
+		// able to write a simple list of key-value pair footers correctly.
 		// So, we can't enforce this rule.
 		/*
 		diagnostics = append(diagnostics, lsp.Diagnostic{
 			Severity: 1,
 			Range:    LineRange(row, 0, row, len(line)),
-			Source:   "conventional-commit-lsp",
+			Source:   lsp.ServerName,
 			Message:  "Commit footer must be in the format of 'Footer-key: string value'.",
 		})
 		*/
@@ -47,7 +47,7 @@ func getFooterDiagnostics(line string, row int) []lsp.Diagnostic {
 			diagnostics = append(diagnostics, lsp.Diagnostic{
 				Severity: 1,
 				Range:    line_range,
-				Source:   "conventional-commit-lsp",
+				Source:   lsp.ServerName,
 				Message:  "BREAKING CHANGE must be uppercase.",
 				Data: &lsp.DiagnosticData{
 					DiagnosticType: lsp.CommitMessageBreakingChangeCaseInvalid,
@@ -57,7 +57,7 @@ func getFooterDiagnostics(line string, row int) []lsp.Diagnostic {
 			diagnostics = append(diagnostics, lsp.Diagnostic{
 				Severity: 1,
 				Range:    line_range,
-				Source:   "conventional-commit-lsp",
+				Source:   lsp.ServerName,
 				Message:  "BREAKING-CHANGE must be uppercase.",
 				Data: &lsp.DiagnosticData{
 					DiagnosticType: lsp.CommitMessageBreakingChangeCaseInvalid,
@@ -65,11 +65,11 @@ func getFooterDiagnostics(line string, row int) []lsp.Diagnostic {
 			})
 		} else if strings.Contains(token, " ") {
 			// INFO: see above
-			/* 
+			/*
 			diagnostics = append(diagnostics, lsp.Diagnostic{
 				Severity: 1,
 				Range:    line_range,
-				Source:   "conventional-commit-lsp",
+				Source:   lsp.ServerName,
 				Message:  "Footer tokens must not contain spaces. Use hyphens instead.",
 			})
 			*/
@@ -79,7 +79,7 @@ func getFooterDiagnostics(line string, row int) []lsp.Diagnostic {
 			diagnostics = append(diagnostics, lsp.Diagnostic{
 				Severity: 2,
 				Range:    line_range,
-				Source:   "conventional-commit-lsp",
+				Source:   lsp.ServerName,
 				Message:  "Footer tokens should not contain underscores. Use hyphens instead.",
 			})
 			*/

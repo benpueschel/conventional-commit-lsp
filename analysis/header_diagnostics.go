@@ -13,7 +13,7 @@ func getHeaderDiagnostics(header string, row int) []lsp.Diagnostic {
 		diagnostics = append(diagnostics, lsp.Diagnostic{
 			Severity: 1,
 			Range:    LineRange(row, 0, row, 0),
-			Source:   "conventional-commit-lsp",
+			Source:   lsp.ServerName,
 			Message:  "Commit message must not be empty",
 			Data: &lsp.DiagnosticData{
 				DiagnosticType: lsp.CommitMessageHeaderMissing,
@@ -24,14 +24,14 @@ func getHeaderDiagnostics(header string, row int) []lsp.Diagnostic {
 		diagnostics = append(diagnostics, lsp.Diagnostic{
 			Severity: 1,
 			Range:    LineRange(row, 72, row, len(header)),
-			Source:   "conventional-commit-lsp",
+			Source:   lsp.ServerName,
 			Message:  "Commit message must be less than 72 characters",
 		})
 	} else if len(header) > 50 {
 		diagnostics = append(diagnostics, lsp.Diagnostic{
 			Severity: 2,
 			Range:    LineRange(row, 50, row, len(header)),
-			Source:   "conventional-commit-lsp",
+			Source:   lsp.ServerName,
 			Message:  "Commit message should be less than 50 characters",
 		})
 	}
@@ -42,7 +42,7 @@ func getHeaderDiagnostics(header string, row int) []lsp.Diagnostic {
 		diagnostics = append(diagnostics, lsp.Diagnostic{
 			Severity: 1,
 			Range:    line_range,
-			Source:   "conventional-commit-lsp",
+			Source:   lsp.ServerName,
 			Message:  "Commit message must contain a type and description, separated by a colon and space. ",
 		})
 		return diagnostics
@@ -55,7 +55,7 @@ func getHeaderDiagnostics(header string, row int) []lsp.Diagnostic {
 		diagnostics = append(diagnostics, lsp.Diagnostic{
 			Severity: 1,
 			Range:    line_range,
-			Source:   "conventional-commit-lsp",
+			Source:   lsp.ServerName,
 			Message:  "Commit message must contain a description",
 		})
 	}
@@ -65,7 +65,7 @@ func getHeaderDiagnostics(header string, row int) []lsp.Diagnostic {
 		diagnostics = append(diagnostics, lsp.Diagnostic{
 			Severity: 1,
 			Range:    line_range,
-			Source:   "conventional-commit-lsp",
+			Source:   lsp.ServerName,
 			Message:  "Commit message must contain a type",
 		})
 	}
@@ -80,7 +80,7 @@ func getTypeDiagnostic(commit_type string, row int) []lsp.Diagnostic {
 		diagnostics = append(diagnostics, lsp.Diagnostic{
 			Severity: 1,
 			Range:    line_range,
-			Source:   "conventional-commit-lsp",
+			Source:   lsp.ServerName,
 			Message:  "Commit type must not contain spaces",
 		})
 	}
@@ -95,7 +95,7 @@ func getTypeDiagnostic(commit_type string, row int) []lsp.Diagnostic {
 			diagnostics = append(diagnostics, lsp.Diagnostic{
 				Severity: 1,
 				Range:    line_range,
-				Source:   "conventional-commit-lsp",
+				Source:   lsp.ServerName,
 				Message:  "Commit type must be alphabetic",
 				Data: &lsp.DiagnosticData{
 					DiagnosticType: lsp.CommitMessageTypeNotAlphabetical,
@@ -112,7 +112,7 @@ func getTypeDiagnostic(commit_type string, row int) []lsp.Diagnostic {
 		diagnostics = append(diagnostics, lsp.Diagnostic{
 			Severity: 1,
 			Range:    line_range,
-			Source:   "conventional-commit-lsp",
+			Source:   lsp.ServerName,
 			Message:  "Unclosed scope. Insert a closing parenthesis",
 		})
 	}
@@ -125,24 +125,10 @@ func getTypeDiagnostic(commit_type string, row int) []lsp.Diagnostic {
 		diagnostics = append(diagnostics, lsp.Diagnostic{
 			Severity: 1,
 			Range:    line_range,
-			Source:   "conventional-commit-lsp",
+			Source:   lsp.ServerName,
 			Message:  "Commit type must be alphabetic",
 			Data: &lsp.DiagnosticData{
 				DiagnosticType: lsp.CommitMessageTypeNotAlphabetical,
-			},
-		})
-	}
-
-	if !isAlphabetic(scope) {
-		idx := len(commit_type) + len(scope) + 1
-		line_range := LineRange(row, len(commit_type)+1, row, idx)
-		diagnostics = append(diagnostics, lsp.Diagnostic{
-			Severity: 1,
-			Range:    line_range,
-			Source:   "conventional-commit-lsp",
-			Message:  "Scope must be alphabetic",
-			Data: &lsp.DiagnosticData{
-				DiagnosticType: lsp.CommitMessageScopeNotAlphabetical,
 			},
 		})
 	}
@@ -156,7 +142,7 @@ func checkBreakingHeaderDiagnostic(breaking string, idx int, row int, diagnostic
 		diagnostics = append(diagnostics, lsp.Diagnostic{
 			Severity: 1,
 			Range:    line_range,
-			Source:   "conventional-commit-lsp",
+			Source:   lsp.ServerName,
 			Message:  "Breaking change indicator must be '!'",
 			Data: &lsp.DiagnosticData{
 				DiagnosticType: lsp.CommitMessageHeaderBreakingInvalid,

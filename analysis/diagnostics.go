@@ -29,7 +29,7 @@ func GetDiagnostics(text string) []lsp.Diagnostic {
 					diagnostics = append(diagnostics, lsp.Diagnostic{
 						Severity: 1,
 						Range:    LineRange(currentLine, 0, currentLine, len(line)),
-						Source:   "conventional-commit-lsp",
+						Source:   lsp.ServerName,
 						Message:  "Commit body must begin one blank line after the header. This line should be empty.",
 						Data: &lsp.DiagnosticData{
 							DiagnosticType: lsp.CommitMessageNoNewlineAfterHeader,
@@ -40,13 +40,17 @@ func GetDiagnostics(text string) []lsp.Diagnostic {
 		} else {
 			// body or footer (it's hard to tell the difference, so we'll just get diagnostics for both)
 			for _, line := range lines {
+				// line is a comment, skip
+				if strings.Index(line, "#") == 0 {
+					continue
+				}
 				currentLine++
 				diagnostics = append(diagnostics, getFooterDiagnostics(line, currentLine)...)
 				if len(line) > 72 {
 					diagnostics = append(diagnostics, lsp.Diagnostic{
 						Severity: 2,
 						Range:    LineRange(currentLine, 72, currentLine, len(line)),
-						Source:   "conventional-commit-lsp",
+						Source:   lsp.ServerName,
 						Message:  "Commit body shoyld be wrapped at 72 characters.",
 					})
 				}

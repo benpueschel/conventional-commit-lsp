@@ -11,7 +11,7 @@ func (s *State) GetCodeActions(request lsp.CodeActionRequest) lsp.CodeActionResp
 	actions := []lsp.CodeAction{}
 
 	for _, diagnostic := range request.Params.Context.Diagnostics {
-		if diagnostic.Source != "conventional-commit-lsp" {
+		if diagnostic.Source != lsp.ServerName {
 			continue
 		}
 		if diagnostic.Data == nil {

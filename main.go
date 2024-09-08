@@ -3,12 +3,14 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"io"
 	"log"
 	"os"
 	"strconv"
 
 	"github.com/benpueschel/conventional-commit-lsp/analysis"
+	"github.com/benpueschel/conventional-commit-lsp/lsp"
 	"github.com/benpueschel/conventional-commit-lsp/rpc"
 )
 
@@ -46,6 +48,8 @@ func handleMessage(logger *log.Logger, writer io.Writer, state *analysis.State, 
 		textDocumentCodeAction(logger, writer, state, contents)
 	case "textDocument/completion":
 		textDocumentCompletion(logger, writer, state, contents)
+	case "textDocument/definition":
+		textDocumentDefinition(logger, writer, state, contents)
 	}
 }
 
@@ -58,7 +62,7 @@ func getLogger(filename string) *log.Logger {
 	if err != nil {
 		log.Fatalf("Failed to open log file: %s", err)
 	}
-	return log.New(file, "[conventional-commit-lsp]", log.Ldate|log.Ltime|log.Lshortfile)
+	return log.New(file, fmt.Sprintf("[%s] ", lsp.ServerName), log.Ldate|log.Ltime|log.Lshortfile)
 }
 
 // type SplitFunc func(data []byte, atEOF bool) (advance int, token []byte, err error)

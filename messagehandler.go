@@ -80,6 +80,27 @@ func textDocumentCompletion(logger *log.Logger, writer io.Writer, state *analysi
 	return nil
 }
 
+func textDocumentDefinition(logger *log.Logger, writer io.Writer, state *analysis.State, contents []byte) error {
+	var request lsp.DefinitionRequest
+	if err := handleBaseRequest(logger, contents, &request, "textDocument/definition"); err != nil {
+		return err
+	}
+	definitions, err := state.GetDefinitions(logger, request)
+	if err != nil {
+		logger.Printf("Failed to get definitions: %s", err)
+		return err
+	}
+	response := lsp.DefinitionResponse{
+		Response: lsp.Response{
+			ID: &request.ID,
+			RPC: "2.0",
+		},
+		Result: definitions,
+	}
+	writeResponse(response, writer)
+	return nil
+}
+
 func writeDiagnostics(uri string, diagnostics []lsp.Diagnostic, writer io.Writer) {
 	writeResponse(lsp.PublishDiagnosticsNotification{
 		Notification: lsp.Notification{
@@ -97,4 +118,3 @@ func writeResponse(msg any, writer io.Writer) {
 	reply := rpc.EncodeMessage(msg)
 	writer.Write([]byte(reply))
 }
-
