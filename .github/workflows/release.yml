@@ -1,0 +1,46 @@
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+  packages: write
+
+name: Publish binaries on release
+
+jobs:
+  build-and-package:
+    name: Build and package binaries
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            goos: linux
+            goarch: amd64
+          - os: ubuntu-24.04-arm
+            goos: linux
+            goarch: arm64
+          - os: macos-latest-large
+            goos: darwin
+            goarch: amd64
+          - os: macos-latest
+            goos: darwin
+            goarch: arm64
+          - os: windows-11-arm
+            goos: windows
+            goarch: arm64
+          - os: windows-latest
+            goos: windows
+            goarch: amd64
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v4
+    - uses: wangyoucao577/go-release-action@v1
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        goos: ${{ matrix.goos }}
+        goarch: ${{ matrix.goarch }}
+        goversion: ./go.mod
+        extra_files: LICENSE README.md
+        md5sum: false
+        sha256sum: true
