@@ -17,16 +17,19 @@ jobs:
           - os: ubuntu-latest
             goos: linux
             goarch: amd64
-          - os: ubuntu-24.04-arm
+          - os: ubuntu-latest
             goos: linux
             goarch: arm64
-          - os: macos-latest
+          - os: ubuntu-latest
+            goos: darwin
+            goarch: amd64
+          - os: ubuntu-latest
             goos: darwin
             goarch: arm64
-          - os: windows-11-arm
+          - os: ubuntu-latest
             goos: windows
             goarch: arm64
-          - os: windows-latest
+          - os: ubuntu-latest
             goos: windows
             goarch: amd64
     runs-on: ${{ matrix.os }}
